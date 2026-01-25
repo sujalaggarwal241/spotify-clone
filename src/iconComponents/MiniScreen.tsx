@@ -1,0 +1,22 @@
+type MiniScreenIconProps = {
+    active?: boolean;
+  };
+  
+  export default function MiniScreenIcon({ active = false }: MiniScreenIconProps) {
+    return (
+      <svg
+        viewBox="0 0 16 16"
+        aria-hidden="true"
+        className={`
+          h-4 w-4
+          transition-colors
+          ${active ? "fill-black" : "fill-neutral-400 group-hover:fill-white"}
+        `}
+      >
+        <path d="M16 2.45c0-.8-.65-1.45-1.45-1.45H1.45C.65 1 0 1.65 0 2.45v11.1C0 14.35.65 15 1.45 15h5.557v-1.5H1.5v-11h13V7H16z" />
+        <path d="M15.25 9.007a.75.75 0 0 1 .75.75v4.493a.75.75 0 0 1-.75.75H9.325a.75.75 0 0 1-.75-.75V9.757a.75.75 0 0 1 .75-.75z" />
+
+      </svg>
+    );
+  }
+  
