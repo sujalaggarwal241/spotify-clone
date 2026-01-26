@@ -32,7 +32,7 @@ export default function Home() {
         <div>Show all</div>
         </div>
 
-        <div className="flex overflow-x-auto gap-4 whitespace-nowrap">
+        {/* <div className="flex overflow-x-auto gap-4 whitespace-nowrap">
           <Card />
           <Card />
           <Card />
@@ -78,7 +78,7 @@ export default function Home() {
           <Card />
           <Card />
           <Card />
-        </div>
+        </div> */}
         
       </div>
 

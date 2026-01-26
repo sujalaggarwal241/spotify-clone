@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useState, useMemo, useEffect, useCallback } from "react";
-import { songs } from "../../public/data/songs";
+import { useRef, useEffect, useState } from "react";
+import { usePlayback } from "@/context/PlaybackContext";
 
 import IconButton from "./IconButton";
 import ShuffleIcon from "@/iconComponents/Shuffle";
@@ -17,52 +17,33 @@ import SpeakerIcon from "@/iconComponents/Speaker";
 import MiniScreenIcon from "@/iconComponents/MiniScreen";
 import FullScreenIcon from "@/iconComponents/FullScreen";
 
-type PlayerProps = {
-  songId?: number;
-};
-
-export default function Player({ songId = 2 }: PlayerProps) {
+export default function Player() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
 
-  const [isPlaying, setIsPlaying] = useState(false);
+  const {
+    currentSong,
+    isPlaying,
+    togglePlay,
+    next,
+    prev,
+    shuffle,
+    loop,
+    toggleShuffle,
+    toggleLoop,
+  } = usePlayback();
+
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  const song = useMemo(
-    () => songs.find((s) => s.id === songId) ?? songs[0],
-    [songId]
-  );
-
-  /* ---------- PLAY / PAUSE ---------- */
-  const togglePlay = useCallback(() => {
+  /* ---------- AUDIO SYNC ---------- */
+  useEffect(() => {
     const audio = audioRef.current;
-    if (!audio) return;
+    if (!audio || !currentSong) return;
 
-    if (audio.paused) {
-      audio.play();
-      setIsPlaying(true);
-    } else {
-      audio.pause();
-      setIsPlaying(false);
-    }
-  }, []);
-
-  /* ---------- FORMAT TIME ---------- */
-  const formatTime = (time: number) => {
-    const m = Math.floor(time / 60);
-    const s = Math.floor(time % 60);
-    return `${m}:${s.toString().padStart(2, "0")}`;
-  };
-
-  /* ---------- SEEK ---------- */
-  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!progressRef.current || !audioRef.current) return;
-
-    const rect = progressRef.current.getBoundingClientRect();
-    const percent = (e.clientX - rect.left) / rect.width;
-    audioRef.current.currentTime = percent * duration;
-  };
+    if (isPlaying) audio.play();
+    else audio.pause();
+  }, [isPlaying, currentSong]);
 
   /* ---------- AUDIO EVENTS ---------- */
   useEffect(() => {
@@ -71,7 +52,7 @@ export default function Player({ songId = 2 }: PlayerProps) {
 
     const onTime = () => setCurrentTime(audio.currentTime);
     const onLoaded = () => setDuration(audio.duration);
-    const onEnd = () => setIsPlaying(false);
+    const onEnd = () => next();
 
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("loadedmetadata", onLoaded);
@@ -82,38 +63,49 @@ export default function Player({ songId = 2 }: PlayerProps) {
       audio.removeEventListener("loadedmetadata", onLoaded);
       audio.removeEventListener("ended", onEnd);
     };
-  }, []);
+  }, [next]);
 
-  /* ---------- RESET ON SONG CHANGE ---------- */
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
+  /* ---------- SEEK ---------- */
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!progressRef.current || !audioRef.current) return;
 
-    audio.pause();
-    audio.currentTime = 0;
-    setIsPlaying(false);
-    setCurrentTime(0);
-  }, [songId]);
+    const rect = progressRef.current.getBoundingClientRect();
+    const percent = (e.clientX - rect.left) / rect.width;
+    audioRef.current.currentTime = percent * duration;
+  };
+
+  /* ---------- FORMAT TIME ---------- */
+  const formatTime = (time: number) => {
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60);
+    return `${m}:${s.toString().padStart(2, "0")}`;
+  };
+
+  if (!currentSong) return null;
 
   return (
     <>
       {/* AUDIO */}
-      <audio ref={audioRef} src={song.audioUrl} preload="metadata" />
+      <audio
+        ref={audioRef}
+        src={currentSong.audioUrl}
+        preload="metadata"
+      />
 
       <div className="fixed bottom-0 left-0 w-full h-20 px-6 flex items-center bg-black z-50">
         {/* LEFT */}
         <div className="flex gap-4 min-w-[280px]">
           <div
             className="w-14 h-14 rounded bg-cover bg-center"
-            style={{ backgroundImage: `url(${song.coverUrl})` }}
+            style={{ backgroundImage: `url(${currentSong.coverUrl})` }}
           />
 
           <div className="flex flex-col justify-center overflow-hidden">
-            <div className="font-bold text-sm whitespace-nowrap overflow-hidden">
-              <span>{song.title}</span>
+            <div className="font-bold text-sm truncate">
+              {currentSong.title}
             </div>
-            <div className="text-xs text-neutral-400 whitespace-nowrap overflow-hidden">
-              <span>{song.artist}</span>
+            <div className="text-xs text-neutral-400 truncate">
+              {currentSong.artist}
             </div>
           </div>
         </div>
@@ -122,8 +114,16 @@ export default function Player({ songId = 2 }: PlayerProps) {
         <div className="flex flex-col flex-1 gap-2 items-center">
           {/* CONTROLS */}
           <div className="flex items-center gap-2">
-            <IconButton label="Shuffle"><ShuffleIcon /></IconButton>
-            <IconButton label="Previous"><PreviousIcon /></IconButton>
+            <IconButton
+              label="Shuffle"
+              onClick={toggleShuffle}
+            >
+              <ShuffleIcon />
+            </IconButton>
+
+            <IconButton label="Previous" onClick={prev}>
+              <PreviousIcon />
+            </IconButton>
 
             <IconButton
               label={isPlaying ? "Pause" : "Play"}
@@ -132,8 +132,16 @@ export default function Player({ songId = 2 }: PlayerProps) {
               {isPlaying ? <PauseIcon /> : <PlayIcon />}
             </IconButton>
 
-            <IconButton label="Next"><NextIcon /></IconButton>
-            <IconButton label="Loop"><LoopIcon /></IconButton>
+            <IconButton label="Next" onClick={next}>
+              <NextIcon />
+            </IconButton>
+
+            <IconButton
+              label="Loop"
+              onClick={toggleLoop}
+            >
+              <LoopIcon />
+            </IconButton>
           </div>
 
           {/* PROGRESS */}
@@ -144,7 +152,7 @@ export default function Player({ songId = 2 }: PlayerProps) {
 
             <div
               ref={progressRef}
-              onClick={handleProgressClick}
+              onClick={handleSeek}
               className="flex-1 h-1 bg-neutral-600 rounded-full cursor-pointer overflow-hidden"
             >
               <div
