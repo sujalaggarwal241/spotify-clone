@@ -15,6 +15,7 @@ import DeviceIcon from "@/iconComponents/Device";
 import SpeakerIcon from "@/iconComponents/Speaker";
 import MiniScreenIcon from "@/iconComponents/MiniScreen";
 import FullScreenIcon from "@/iconComponents/FullScreen";
+import { useLikedSongs } from "../../hooks/useLikedSongs";
 
 export default function Player() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -36,46 +37,8 @@ export default function Player() {
     toggleLoop,
   } = usePlayback();
 
-  const getLikedSongIds = (): number[] => {
-    try {
-      const raw = localStorage.getItem("likedSongs");
-      if (!raw) return [];
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) return [];
-      return parsed.filter((x) => typeof x === "number");
-    } catch {
-      return [];
-    }
-  };
+  const { isLiked, toggleLike } = useLikedSongs(currentSong?.id);
 
-  const setLikedSongIds = (ids: number[]) => {
-    localStorage.setItem("likedSongs", JSON.stringify(ids));
-    window.dispatchEvent(new CustomEvent("likedSongsChanged", { detail: ids }));
-  };
-
-  // Ensure localStorage key exists (run once on mount)
-  useEffect(() => {
-    if (localStorage.getItem("likedSongs") === null) {
-      setLikedSongIds([]);
-    }
-  }, []);
-
-  // Update heart state whenever the current song changes
-  useEffect(() => {
-    if (!currentSong) return;
-    const ids = getLikedSongIds();
-    setIsCurrentSongLiked(ids.includes(currentSong.id));
-  }, [currentSong]);
-
-  const toggleLikedSong = () => {
-    if (!currentSong) return;
-    const ids = getLikedSongIds();
-    const nextIds = ids.includes(currentSong.id)
-      ? ids.filter((id) => id !== currentSong.id)
-      : [...ids, currentSong.id];
-    setLikedSongIds(nextIds);
-    setIsCurrentSongLiked(nextIds.includes(currentSong.id));
-  };
   /* ---------- AUDIO SYNC ---------- */
   useEffect(() => {
     const audio = audioRef.current;
@@ -154,9 +117,9 @@ export default function Player() {
 
           {/* LIKE BUTTON */}
           <div className="flex items-center">
-            {isCurrentSongLiked ? (
+            {isLiked ? (
               <svg
-                onClick={toggleLikedSong}
+                onClick={() => toggleLike(currentSong?.id)}
                 className="w-4 h-4 text-[#1db954] cursor-pointer fill-white"
                 
                 viewBox="0 0 16 16"
@@ -165,7 +128,7 @@ export default function Player() {
               </svg>
             ) : (
               <svg
-                onClick={toggleLikedSong}
+              onClick={() => toggleLike(currentSong?.id)}
                 className="w-4 h-4 text-neutral-400 fill-white cursor-pointer"
                 viewBox="0 0 24 24"
               >

@@ -111,7 +111,7 @@ export default function LeftSidebar() {
       </div>
       <div className="flex flex-col gap-2 py-4" key={selectedOption}> 
 
-        {(selectedOption === "" || selectedOption==="playlist") && <LeftSidebarCard title="Liked songs " subtitle="Playlist" image="/coverImages/14.jpg" type="album" />}
+        {(selectedOption === "" || selectedOption==="playlist") && <LeftSidebarCard onClick={()=> router.push('/likedsongs')} title="Liked songs " subtitle="Playlist" image="/coverImages/14.jpg" type="album" />}
         {selectedOption === ""
           ? shuffled
           : selectedOption === "album"

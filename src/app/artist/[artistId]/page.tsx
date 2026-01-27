@@ -86,6 +86,7 @@ export default function Artist() {
 
           {allSongs.map((song, index)=>(
             <ArtistSongRow 
+            id = {song.id}
             index={index+1}
             songTitle={song.title} 
             streams={song.streams} 
