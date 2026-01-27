@@ -93,6 +93,7 @@ export default function Player() {
         ref={audioRef}
         src={currentSong.audioUrl}
         preload="metadata"
+        loop={loop}
       />
 
       <div className="fixed bottom-0 left-0 w-full h-20 px-6 flex items-center bg-black z-50">

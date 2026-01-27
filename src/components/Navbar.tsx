@@ -32,7 +32,16 @@ export default function Navbar() {
                     <input 
                     type="text" 
                     placeholder='What do you want to play?'
-                    className='border-r border-right-white mx-3 w-full' />
+                    className="
+                    mx-3 w-full
+                    bg-transparent
+                    border-none
+                    outline-none
+                    ring-0
+                    appearance-none
+                    text-white
+                    placeholder-neutral-400
+                    "/>
                     
                     <svg
                     viewBox="0 0 24 24"

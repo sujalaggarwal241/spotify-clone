@@ -1,6 +1,6 @@
 import GridCard from "@/components/GridCard";
 import Card from "@/components/Card";
-
+import { songs } from "../../public/data/songs";
 export default function Home() {
   return (
     <div className="bg-neutral-900 w-full rounded-xl gap-6 flex flex-col rounded-xl">
@@ -15,75 +15,25 @@ export default function Home() {
           Podcast
         </button>
       </div>
-
       <div className="flex flex-col gap-6 px-12 rounded-xl"> 
-
       <div className="grid grid-cols-4 gap-2 ">
-        <div className=""><GridCard imageUrl="/coverImages/1.jpg" title="Liked Songs"/></div>
-        <div className=""><GridCard imageUrl="/coverImages/1.jpg" title="Liked Songs"/></div>
-        <div className=""><GridCard imageUrl="/coverImages/1.jpg" title="Liked Songs"/></div>
-        <div className=""><GridCard imageUrl="/coverImages/1.jpg" title="Liked Songs"/></div>
-        <div className=""><GridCard imageUrl="/coverImages/1.jpg" title="Liked Songs"/></div>
+        <GridCard imageUrl="/coverImages/14.jpg" title="Liked Songs"/>
+        <GridCard imageUrl="/coverImages/3.jpg" title="Urban Vibes"/>
+        <GridCard imageUrl="/artistImages/1.jpg" title="Ava Collins"/>
+        <GridCard imageUrl="/coverImages/5.jpg" title="Lofi Nights"/>
       </div>
-
       <div className="flex flex-col gap-4">
         <div className="flex justify-between">
         <div className="font-bold text-2xl">Recently Played</div>
         <div>Show all</div>
         </div>
-
-        {/* <div className="flex overflow-x-auto gap-4 whitespace-nowrap">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-        </div>
-        
         <div className="flex overflow-x-auto gap-4 whitespace-nowrap">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
+          {songs.map((song) => (
+            <Card song={song} />
+          ))}
         </div>
-        
-        <div className="flex overflow-x-auto gap-4 whitespace-nowrap">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-        </div>
-        
-        <div className="flex overflow-x-auto gap-4 whitespace-nowrap">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-        </div>
-        
-        <div className="flex overflow-x-auto gap-4 whitespace-nowrap">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-        </div>
-        
-        <div className="flex overflow-x-auto gap-4 whitespace-nowrap">
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-          <Card />
-        </div> */}
-        
       </div>
-
       </div>
-
     </div>
   );
 }

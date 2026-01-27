@@ -41,7 +41,7 @@ export function PlaybackProvider({ children }: { children: React.ReactNode }) {
     } else if (currentIndex < queue.length - 1) {
       setCurrentIndex((i) => i + 1);
     } else if (loop) {
-      setCurrentIndex(0);
+      setCurrentIndex((i) => i);
     }
   };
 
