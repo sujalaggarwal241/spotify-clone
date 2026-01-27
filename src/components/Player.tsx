@@ -2,7 +2,6 @@
 
 import { useRef, useEffect, useState } from "react";
 import { usePlayback } from "@/context/PlaybackContext";
-
 import IconButton from "./IconButton";
 import ShuffleIcon from "@/iconComponents/Shuffle";
 import PreviousIcon from "@/iconComponents/Previous";
@@ -20,6 +19,10 @@ import FullScreenIcon from "@/iconComponents/FullScreen";
 export default function Player() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isCurrentSongLiked, setIsCurrentSongLiked] = useState(false);
+
 
   const {
     currentSong,
@@ -33,9 +36,46 @@ export default function Player() {
     toggleLoop,
   } = usePlayback();
 
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
+  const getLikedSongIds = (): number[] => {
+    try {
+      const raw = localStorage.getItem("likedSongs");
+      if (!raw) return [];
+      const parsed = JSON.parse(raw);
+      if (!Array.isArray(parsed)) return [];
+      return parsed.filter((x) => typeof x === "number");
+    } catch {
+      return [];
+    }
+  };
 
+  const setLikedSongIds = (ids: number[]) => {
+    localStorage.setItem("likedSongs", JSON.stringify(ids));
+    window.dispatchEvent(new CustomEvent("likedSongsChanged", { detail: ids }));
+  };
+
+  // Ensure localStorage key exists (run once on mount)
+  useEffect(() => {
+    if (localStorage.getItem("likedSongs") === null) {
+      setLikedSongIds([]);
+    }
+  }, []);
+
+  // Update heart state whenever the current song changes
+  useEffect(() => {
+    if (!currentSong) return;
+    const ids = getLikedSongIds();
+    setIsCurrentSongLiked(ids.includes(currentSong.id));
+  }, [currentSong]);
+
+  const toggleLikedSong = () => {
+    if (!currentSong) return;
+    const ids = getLikedSongIds();
+    const nextIds = ids.includes(currentSong.id)
+      ? ids.filter((id) => id !== currentSong.id)
+      : [...ids, currentSong.id];
+    setLikedSongIds(nextIds);
+    setIsCurrentSongLiked(nextIds.includes(currentSong.id));
+  };
   /* ---------- AUDIO SYNC ---------- */
   useEffect(() => {
     const audio = audioRef.current;
@@ -95,20 +135,47 @@ export default function Player() {
       <div className="fixed bottom-0 left-0 w-full h-20 px-6 flex items-center bg-black z-50">
         {/* LEFT */}
         <div className="flex gap-4 min-w-[280px]">
-          <div
-            className="w-14 h-14 rounded bg-cover bg-center"
-            style={{ backgroundImage: `url(${currentSong.coverUrl})` }}
-          />
+          {/* IMAGE + TEXT */}
+          <div className="flex items-center gap-3">
+            <div
+              className="w-14 h-14 rounded bg-cover bg-center"
+              style={{ backgroundImage: `url(${currentSong.coverUrl})` }}
+            />
 
-          <div className="flex flex-col justify-center overflow-hidden">
-            <div className="font-bold text-sm truncate">
-              {currentSong.title}
-            </div>
-            <div className="text-xs text-neutral-400 truncate">
-              {currentSong.artist}
+            <div className="flex flex-col overflow-hidden">
+              <div className="font-bold text-sm truncate">
+                {currentSong.title}
+              </div>
+              <div className="text-xs text-neutral-400 truncate">
+                {currentSong.artist}
+              </div>
             </div>
           </div>
+
+          {/* LIKE BUTTON */}
+          <div className="flex items-center">
+            {isCurrentSongLiked ? (
+              <svg
+                onClick={toggleLikedSong}
+                className="w-4 h-4 text-[#1db954] cursor-pointer fill-white"
+                
+                viewBox="0 0 16 16"
+              >
+                <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m11.748-1.97a.75.75 0 0 0-1.06-1.06l-4.47 4.47-1.405-1.406a.75.75 0 1 0-1.061 1.06l2.466 2.467 5.53-5.53z" />
+              </svg>
+            ) : (
+              <svg
+                onClick={toggleLikedSong}
+                className="w-4 h-4 text-neutral-400 fill-white cursor-pointer"
+                viewBox="0 0 24 24"
+              >
+                <path d="M11.999 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18m-11 9c0-6.075 4.925-11 11-11s11 4.925 11 11-4.925 11-11 11-11-4.925-11-11" /> 
+                <path d="M17.999 12a1 1 0 0 1-1 1h-4v4a1 1 0 1 1-2 0v-4h-4a1 1 0 1 1 0-2h4V7a1 1 0 1 1 2 0v4h4a1 1 0 0 1 1 1" />
+              </svg>
+            )}
+          </div>
         </div>
+
 
         {/* CENTER */}
         <div className="flex flex-col flex-1 gap-2 items-center">

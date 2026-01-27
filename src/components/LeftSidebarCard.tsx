@@ -5,6 +5,7 @@ type SidebarItemProps = {
   subtitle: string;
   image: string;
   type: "album" | "artist";
+  onClick?: () => void;
 };
 
 export default function LeftSidebarCard({
@@ -12,9 +13,10 @@ export default function LeftSidebarCard({
   subtitle,
   image,
   type,
+  onClick,
 }: SidebarItemProps) {
   return (
-    <div className="flex items-center gap-4 p-2 rounded-md hover:bg-neutral-800 transition cursor-pointer">
+    <div onClick={onClick} className="flex items-center gap-4 p-2 rounded-md hover:bg-neutral-800 transition cursor-pointer">
       {/* Image Wrapper */}
       <div
         className={`w-12 h-12 shrink-0 flex items-center justify-center overflow-hidden bg-neutral-700
