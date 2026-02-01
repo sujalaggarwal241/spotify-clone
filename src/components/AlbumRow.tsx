@@ -8,21 +8,21 @@ import SongOptions from "./SongOptions";
 import AddToPlaylistSubmenu from "./AddToPlaylistSubmenu";
 import PlayIcon from "@/iconComponents/Play";
 import { useRouter } from "next/navigation";
-
+import formatMMSS from "@/utils/formatMMSS";
 type AlbumRowProps = {
   index: number;
   song: Song;
   artistName: string;
-  duration: string;
   playlist?: Song[];
+  artistId : string
 };
 
 export default function AlbumRow({
   index,
   song,
   artistName,
-  duration,
   playlist,
+  artistId
 }: AlbumRowProps) {
   const router = useRouter();
   const { playSong } = usePlayback();
@@ -73,7 +73,10 @@ export default function AlbumRow({
         <div 
           onClick={() => router.push(`/song/${song._id}`)}
           className="font-bold hover:underline">{song.title}</div>
-        <div className="text-sm text-neutral-300">{artistName}</div>
+        <div 
+          className="text-sm text-neutral-300 hover:underline"
+          onClick={()=> router.push(`/artist/${artistId}`)}
+          >{artistName}</div>
       </div>
 
       <div className="flex-1" />
@@ -114,7 +117,7 @@ export default function AlbumRow({
       </div>
 
       {/* DURATION */}
-      <div className="mr-6 text-neutral-300">{duration}</div>
+      <div className="mr-6 text-neutral-300">{formatMMSS(song.duration)}</div>
 
       {/* OPTIONS */}
       <div ref={optionsRef} className="relative">

@@ -28,6 +28,7 @@ export default function LikedSongs() {
   // ✅ CALL ALL HOOKS BEFORE ANY RETURN
   const { data: songs = [] } = useSongs();
   const { data: artists = [] } = useArtists();
+  console.log(artists);
   const { playSong } = usePlayback();
 
   const [likedIds, setLikedIds] = useState<string[]>([]);
@@ -80,12 +81,6 @@ export default function LikedSongs() {
   const totalTime = useMemo(() => {
     return likedSongs.reduce((sum: number, s: any) => sum + (s?.duration || 0), 0);
   }, [likedSongs]);
-
-  const formatMMSS = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60);
-    return `${m}:${s.toString().padStart(2, "0")}`;
-  };
 
   const handlePlay = () => {
     if (!likedSongs.length) return;
@@ -169,8 +164,8 @@ export default function LikedSongs() {
               index={index + 1}
               song={song}
               artistName={artistName}
-              duration={formatMMSS(song.duration || 0)}
               playlist={likedSongs}
+              artistId={song.artistId}
             />
           );
         })}

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Playlist } from "@/types/Playlist";
+import { Playlist } from "@/types/playlist";
 type UpdateInput = {
   id: string;
   name: string;

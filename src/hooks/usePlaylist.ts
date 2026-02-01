@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Playlist } from "@/types/Playlist";
+import { Playlist } from "@/types/playlist";
 
 type ApiError = {
   error: string;

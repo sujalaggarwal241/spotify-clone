@@ -23,7 +23,7 @@ export default function Album() {
   const album = data?.album;
   const artist = data?.artist;
   const albumSongs = data?.songs ?? [];
-
+  console.log(artist?._id);
   const albumTime = useMemo(() => {
     return albumSongs.reduce((sum: number, s: any) => sum + (s?.duration || 0), 0);
   }, [albumSongs]);
@@ -31,12 +31,6 @@ export default function Album() {
   const handlePlay = () => {
     if (!albumSongs.length) return;
     playSong(albumSongs[0], albumSongs);
-  };
-
-  const formatMMSS = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60);
-    return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
   // ✅ if albumId missing (route mismatch)
@@ -135,8 +129,8 @@ export default function Album() {
             index={index + 1}
             song={song}
             artistName={artist?.name || ""}
-            duration={formatMMSS(song.duration || 0)}
             playlist={albumSongs}
+            artistId={artist._id}
           />
         ))}
       </div>

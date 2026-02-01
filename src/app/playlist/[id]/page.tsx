@@ -13,13 +13,6 @@ import { useUpdatePlaylistDetails } from "@/hooks/useUpdatePlaylistDetails";
 import { useDeletePlaylist } from "@/hooks/useDeletePlaylist";
 import type { Song } from "@/types/songs";
 
-/* ---------- helper ---------- */
-function formatDuration(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
 export default function Playlist() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
@@ -243,8 +236,8 @@ export default function Playlist() {
               index={index + 1}
               song={song}
               artistName={(song as any).artist ?? "Unknown"}
-              duration={formatDuration(song.duration)}
               playlist={songs}
+              artistId={song.artistId?.toString() || "" }
             />
           ))
         ) : (

@@ -9,7 +9,7 @@ import AlbumRow from "@/components/AlbumRow";
 import { usePlayback } from "@/context/PlaybackContext";
 import { useSongsByIds } from "@/hooks/useSongsByIds";
 import { useArtist } from "@/hooks/useArtist";
-
+import formatMMSS from "@/utils/formatMMSS";
 export default function Song() {
   const params = useParams();
   const raw = (params as any)?.id;
@@ -45,12 +45,6 @@ export default function Song() {
         audioUrl: song.audioUrl,
       }
     );
-  };
-
-  const formatMMSS = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60);
-    return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
   if (!songId) return <div className="w-full p-6">Missing song id</div>;
@@ -148,7 +142,7 @@ export default function Song() {
           index={1}
           song={song}
           artistName={artistData?.artist?.name || ""}
-          duration={formatMMSS(song.duration || 0)}
+          artistId={song.artistId?.toString() || ""}
           playlist={[song]}
         />
       </div>

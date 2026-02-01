@@ -8,6 +8,7 @@ import PlayIcon from "@/iconComponents/Play";
 import ShuffleIcon from "@/iconComponents/Shuffle";
 import { usePlayback } from "@/context/PlaybackContext";
 import { useArtist } from "@/hooks/useArtist";
+import { Song } from "@/types/songs";
 
 export default function Artist() {
   const params = useParams<{ id: string }>();
@@ -95,12 +96,10 @@ export default function Artist() {
         <div className="flex-1 p-4">
           <div className="text-2xl font-bold py-4">Popular</div>
 
-          {popularSongs.map((song: any, index: number) => (
+          {popularSongs.map((song: Song, index: number) => (
             <ArtistSongRow
-              
-              key={song._id}
-              id={song._id} // if your row expects number, change prop name/type
-              index={index + 1}
+              index={index+1}
+              key={song._id?.toString()} 
               songTitle={song.title}
               streams={song.streams}
               duration={formatMMSS(song.duration || 0)}

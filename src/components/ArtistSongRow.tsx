@@ -1,8 +1,8 @@
 "use client";
 import { useLikedSongs } from "../hooks/useLikedSongs"
 import { useRouter } from "next/navigation"
+import PlayIcon from "@/iconComponents/Play";
 export default function ArtistSongRow(props :{
-	id : number
 	index: number
 	songTitle : string,
 	streams: number,
