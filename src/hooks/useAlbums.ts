@@ -10,5 +10,6 @@ export function useAlbums() {
       if (!res.ok) throw new Error("Failed to fetch albums");
       return res.json();
     },
+    staleTime: Infinity,
   });
 }
