@@ -98,7 +98,7 @@ export default function AlbumRow({
             {isAddMenuOpen && (
               <div className="absolute right-0 top-7 z-50">
                 <AddToPlaylistSubmenu
-                  songId={song._id}
+                  songId={song._id?.toString() || ""}
                   onDone={() => setIsAddMenuOpen(false)}
                 />
               </div>
@@ -121,7 +121,7 @@ export default function AlbumRow({
 
         {isOptionsOpen && (
           <div className="absolute right-0 top-8 z-50">
-            <SongOptions songId={song._id.toString} onClose={() => setIsOptionsOpen(false)} />
+            <SongOptions songId={song._id?.toString() || ""} onClose={() => setIsOptionsOpen(false)} />
           </div>
         )}
       </div>

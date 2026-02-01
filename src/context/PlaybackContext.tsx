@@ -8,17 +8,18 @@ import React, {
   useState,
 } from "react";
 import { useSongs } from "@/hooks/useSongs";
+import { ObjectId } from "mongodb";
 
 export type Song = {
-  _id: string; // ✅ mongo id
+  _id: string | ObjectId | undefined; // ✅ mongo id
   id?: string | number; // (optional) old numeric id support
   title?: string;
   audioUrl?: string;
   coverUrl?: string;
   artist?: string;
-  artistId?: string;
-  albumId?: string;
-};
+  artistId?: string | ObjectId | undefined;
+  albumId?: string | ObjectId | undefined;
+}; 
 
 type PlaybackContextType = {
   currentSong: Song | null;

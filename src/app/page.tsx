@@ -33,7 +33,7 @@ export default function Home() {
         </div>
         <div className="flex overflow-x-auto gap-4 whitespace-nowrap">
           {songs.map((song : Song) => (
-            <Card key={song._id}  song={song} />
+            <Card key={song._id?.toString()}  song={song} />
           ))}
         </div>
       </div>

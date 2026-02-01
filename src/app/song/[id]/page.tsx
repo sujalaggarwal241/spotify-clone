@@ -38,7 +38,7 @@ export default function Song() {
     // ✅ else play this song (must include audioUrl)
     playSong(
       {
-        _id: song._id.toString(),
+        _id: song._id?.toString(),
         title: song.title,
         artistId: song.artistId?.toString(),
         coverUrl: song.coverUrl,
@@ -144,7 +144,7 @@ export default function Song() {
 
         {/* SONG ROW */}
         <AlbumRow
-          key={song._id.toString()}
+          key={song._id?.toString()}
           index={1}
           song={song}
           artistName={artistData?.artist?.name || ""}

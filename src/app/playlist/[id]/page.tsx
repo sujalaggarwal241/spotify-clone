@@ -230,7 +230,7 @@ export default function Playlist() {
         ) : songs && songs.length > 0 ? (
           songs.map((song: Song, index: number) => (
             <AlbumRow
-              key={song._id.toString()}
+              key={song._id?.toString()}
               index={index + 1}
               song={song}
               artistName={(song as any).artist ?? "Unknown"}

@@ -9,5 +9,5 @@ export type Song = {
   streams: number;
   artistId: string | ObjectId | undefined;
   albumId: string | ObjectId | undefined;
-  _id : ObjectId
+  _id : ObjectId | string | undefined
 };

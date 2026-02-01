@@ -74,8 +74,8 @@ export default function RightSidebar() {
 
           <div className="flex flex-col gap-4">
             <Image
-              src={currentSong?.coverUrl}
-              alt={currentSong?.title}
+              src={currentSong?.coverUrl || "/coverImages/15.jpg"}
+              alt={currentSong?.title || "Song" }
               width={320}
               height={320}
               className="rounded"
