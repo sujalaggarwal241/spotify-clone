@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import PlayIcon from "@/iconComponents/Play";
 import ShuffleIcon from "@/iconComponents/Shuffle";
 import AlbumRow from "@/components/AlbumRow";
@@ -23,6 +24,15 @@ export default function Playlist() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
   const id = params?.id;
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) router.push("/login");
+  }, [status, session, router]);
+
+  if (status === "loading") return <div className="p-6 text-white">Loading…</div>;
+  if (!session) return null;
 
   const { data: playlist, isLoading, error } = usePlaylist(id);
   const updateMutation = useUpdatePlaylistDetails();
@@ -30,7 +40,6 @@ export default function Playlist() {
 
   const songIds = playlist?.songs ?? [];
   const { data: songs, isLoading: songsLoading } = useSongsByIds(songIds);
-  console.log("songs", songs);
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   // confirmation modal for delete

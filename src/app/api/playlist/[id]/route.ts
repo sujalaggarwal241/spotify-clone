@@ -17,8 +17,6 @@ type PatchBody = {
 
 export async function GET(req: Request, { params }: Params) {
   const { id } = await params;
-  console.log(id);
-
   if (!ObjectId.isValid(id)) {
     return Response.json({ error: "Invalid playlist id" }, { status: 400 });
   }
@@ -29,10 +27,7 @@ export async function GET(req: Request, { params }: Params) {
   const playlist = await db.collection("playlists").findOne({
     _id: new ObjectId(id),
   });
-  // console.log(id , 
-  //   "playlist" ,playlist
-  // )
-
+  
   if (!playlist) {
     return Response.json({ error: "Playlist not found" }, { status: 404 });
   }

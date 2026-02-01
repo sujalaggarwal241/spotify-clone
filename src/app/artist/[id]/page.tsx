@@ -12,7 +12,6 @@ import { useArtist } from "@/hooks/useArtist";
 export default function Artist() {
   const params = useParams<{ id: string }>();
   const artistId = params.id;
-  console.log(params);
   const { data, isLoading, error } = useArtist(artistId);
   const { playSong } = usePlayback();
 

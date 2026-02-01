@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import PlayIcon from "@/iconComponents/Play";
 import ShuffleIcon from "@/iconComponents/Shuffle";
 import AlbumRow from "@/components/AlbumRow";
@@ -21,6 +23,17 @@ const toId = (v: any) => {
 };
 
 export default function LikedSongs() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) router.push("/login");
+  }, [status, session, router]);
+
+  if (status === "loading") return null;
+  if (!session) return null;
+
   const { data: songs = [] } = useSongs();
   const { data: artists = [] } = useArtists();
   const { playSong } = usePlayback();

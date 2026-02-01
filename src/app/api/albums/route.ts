@@ -11,7 +11,6 @@ export async function GET() {
     .find({})
     .sort({ createdAt: -1 })
     .toArray();
-
-// console.log(albums);
+    
   return NextResponse.json(albums);
 }

@@ -11,7 +11,6 @@ import { useAlbum } from "@/hooks/useAlbum";
 
 export default function Album() {
   const params = useParams();
-  // console.log("Hello from album" , params );
   // ✅ handle string | string[]
   const raw = params?.id;
   const albumId = Array.isArray(raw) ? raw[0] : raw;
