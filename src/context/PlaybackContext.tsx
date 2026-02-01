@@ -1,14 +1,32 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
-import { songs as allSongs } from "../../public/data/songs";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useSongs } from "@/hooks/useSongs";
+
+export type Song = {
+  _id: string; // ✅ mongo id
+  id?: string | number; // (optional) old numeric id support
+  title?: string;
+  audioUrl?: string;
+  coverUrl?: string;
+  artist?: string;
+  artistId?: string;
+  albumId?: string;
+};
+
 type PlaybackContextType = {
-  currentSong: any;
-  queue: any[];
+  currentSong: Song | null;
+  queue: Song[];
   isPlaying: boolean;
   shuffle: boolean;
   loop: boolean;
-  playSong: (song: any, playlist?: any[]) => void;
+  playSong: (song: Song, playlist?: Song[]) => void;
   next: () => void;
   prev: () => void;
   togglePlay: () => void;
@@ -18,35 +36,70 @@ type PlaybackContextType = {
 
 const PlaybackContext = createContext<PlaybackContextType | null>(null);
 
+// ✅ stable key: prefer mongo _id, fallback to old id
+function songKey(s: Song | null | undefined) {
+  if (!s) return "";
+  return String((s as any)._id ?? (s as any).id ?? "");
+}
+
 export function PlaybackProvider({ children }: { children: React.ReactNode }) {
-  const [queue, setQueue] = useState(allSongs);
+  const { data: allSongs = [] } = useSongs();
+
+  const [queue, setQueue] = useState<Song[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const [shuffle, setShuffle] = useState(false);
   const [loop, setLoop] = useState(false);
 
-  const currentSong = queue[currentIndex];
+  // ✅ Keep queue in sync after songs load (only if queue empty)
+  useEffect(() => {
+    if (!allSongs.length) return;
 
-  const playSong = (song: any, playlist = allSongs) => {
-    setQueue(playlist);
-    const index = playlist.findIndex((s) => s.id === song.id);
-    setCurrentIndex(index);
+    setQueue((prevQueue) => (prevQueue.length > 0 ? prevQueue : allSongs));
+    setCurrentIndex((idx) => (idx < allSongs.length ? idx : 0));
+  }, [allSongs]);
+
+  // ✅ currentSong safe
+  const currentSong = useMemo(() => {
+    if (!queue.length) return null;
+    return queue[currentIndex] ?? queue[0] ?? null;
+  }, [queue, currentIndex]);
+
+  const playSong = (song: Song, playlist?: Song[]) => {
+    const list = (playlist && playlist.length ? playlist : allSongs) as Song[];
+    if (!list.length) return;
+
+    const target = songKey(song);
+
+    // ✅ find by _id (fallback id)
+    const index = list.findIndex((s) => songKey(s) === target);
+    const safeIndex = index >= 0 ? index : 0;
+
+    setQueue(list);
+    setCurrentIndex(safeIndex);
     setIsPlaying(true);
   };
 
   const next = () => {
+    if (!queue.length) return;
+
     if (shuffle) {
       const random = Math.floor(Math.random() * queue.length);
       setCurrentIndex(random);
-    } else if (currentIndex < queue.length - 1) {
-      setCurrentIndex((i) => i + 1);
-    } else if (loop) {
-      setCurrentIndex((i) => i);
+      return;
     }
+
+    setCurrentIndex((i) => {
+      const atEnd = i >= queue.length - 1;
+      if (atEnd) return loop ? 0 : i;
+      return i + 1;
+    });
   };
 
   const prev = () => {
-    if (currentIndex > 0) setCurrentIndex((i) => i - 1);
+    if (!queue.length) return;
+    setCurrentIndex((i) => Math.max(i - 1, 0));
   };
 
   return (

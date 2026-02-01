@@ -1,10 +1,10 @@
-import Image from "next/image";
+"use client";
 
 type SidebarItemProps = {
   title: string;
   subtitle: string;
   image: string;
-  type: "album" | "artist";
+  type: "album" | "artist" | "playlist";
   onClick?: () => void;
 };
 
@@ -15,16 +15,21 @@ export default function LeftSidebarCard({
   type,
   onClick,
 }: SidebarItemProps) {
+  const isArtist = type === "artist";
+
   return (
-    <div onClick={onClick} className="flex items-center gap-4 p-2 rounded-md hover:bg-neutral-800 transition cursor-pointer">
-      {/* Image Wrapper */}
+    <div
+      onClick={onClick}
+      className="flex items-center gap-4 p-2 rounded-md hover:bg-neutral-800 transition cursor-pointer"
+    >
+      {/* Image */}
       <div
-        className={`w-12 h-12 shrink-0 flex items-center justify-center overflow-hidden bg-neutral-700
-          ${type === "artist" ? "rounded-full " : "rounded-md"}
+        className={`w-12 h-12 shrink-0 overflow-hidden bg-neutral-700
+          ${isArtist ? "rounded-full" : "rounded-md"}
         `}
       >
         <img
-          src={image}
+          src={image? image : "/coverImages/8.jpg"}
           alt={title}
           className="w-full h-full object-cover"
         />
@@ -35,8 +40,9 @@ export default function LeftSidebarCard({
         <span className="text-sm font-semibold text-white truncate">
           {title}
         </span>
+
         <span className="text-xs text-neutral-400 truncate">
-          {subtitle}
+          {type === "playlist" ? "Playlist" : subtitle}
         </span>
       </div>
     </div>

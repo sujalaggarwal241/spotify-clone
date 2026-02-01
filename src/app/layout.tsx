@@ -1,3 +1,4 @@
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
@@ -6,6 +7,9 @@ import RightSidebar from "@/components/RightSidebar";
 import "./globals.css";
 import LeftSidebar from "@/components/LeftSidebar";
 import { PlaybackProvider } from "@/context/PlaybackContext";
+import SessionProvider from "./providers/SessionProvider";
+import ReactQueryProvider from "./providers/ReactQueryProvider"
+// import SongOptions from "@/components/SongOptions";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -31,12 +35,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}
       >
-
+        <ReactQueryProvider>
+        <SessionProvider>
         <PlaybackProvider>
         {/* Top Navbar */}
         <header className="fixed top-0 left-0 w-full h-16 z-50">
           <Navbar />
         </header>
+        
 
         {/* Main Layout */}
         <main className="pt-16 pb-20 h-screen flex overflow-hidden">
@@ -44,6 +50,7 @@ export default function RootLayout({
             <LeftSidebar />
           {/* Center Content */}
           <section className="flex-1 h-full overflow-auto overscroll-contain px-4 rounded-xl">
+          {/* <SongOptions /> */}
             {children}
           </section>
           {/* Right Sidebar */}
@@ -55,6 +62,9 @@ export default function RootLayout({
         </footer>
 
         </PlaybackProvider>
+        </SessionProvider>
+        </ReactQueryProvider>
+
       </body>
     </html>
   );

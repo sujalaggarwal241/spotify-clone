@@ -1,4 +1,4 @@
-import { useLikedSongs } from "../../hooks/useLikedSongs"
+import { useLikedSongs } from "../hooks/useLikedSongs"
 
 export default function ArtistSongRow(props :{
 	id : number
@@ -6,9 +6,10 @@ export default function ArtistSongRow(props :{
 	songTitle : string,
 	streams: number,
 	duration : string
+	_id: any
 }) {
 
-	const {isLiked, toggleLike} = useLikedSongs(props.id)
+	const {isLiked, toggleLike} = useLikedSongs(props._id)
 
 
 	return (
@@ -28,7 +29,7 @@ export default function ArtistSongRow(props :{
 			<div className="flex items-center">
 				{isLiked ? (
 				<svg
-					onClick={() => toggleLike(props?.id)}
+					onClick={() => toggleLike(props?._id)}
 					className="w-4 h-4 text-[#1db954] cursor-pointer fill-white"
 					
 					viewBox="0 0 16 16"
@@ -37,7 +38,7 @@ export default function ArtistSongRow(props :{
 				</svg>
 				) : (
 				<svg
-				onClick={() => toggleLike(props?.id)}
+				onClick={() => toggleLike(props?._id)}
 					className="w-4 h-4 text-neutral-400 fill-white cursor-pointer"
 					viewBox="0 0 24 24"
 				>

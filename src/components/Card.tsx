@@ -1,27 +1,53 @@
-import Image from "next/image"
-import type { Song } from "../../public/data/songs"
-import { artists } from "../../public/data/artists"
+"use client";
 
+import type { Song } from "../types/songs";
+import { useArtists } from "@/hooks/useArtists";
+import type { Artist } from "@/types/artists";
+import { usePlayback } from "@/context/PlaybackContext";
+import PlayButton from "@/iconComponents/Play";
 export default function Card({ song }: { song: Song }) {
+  const { data: artists = [] } = useArtists();
+  const { playSong } = usePlayback();
 
-  const artistName = artists.filter(
-    (artist) => (song.artistId === artist.id)
+  const artist = artists.find(
+    (artist: Artist) => song.artistId === artist._id
   );
 
-    return (
-      <div className="flex flex-col shrink-0 gap-1 hover:bg-neutral-600 p-2 rounded">
-        <div className="w-[190px] h-[106px] overflow-hidden rounded"> 
-        <img  
+  const handlePlay = (e: React.MouseEvent) => {
+    e.stopPropagation(); // important if card is clickable later
+    playSong(song);
+  };
+
+  return (
+    <div className="group flex flex-col shrink-0 gap-1 p-2 rounded hover:bg-neutral-600 transition">
+      {/* COVER */}
+      <div className="relative w-[190px] h-[106px] overflow-hidden rounded">
+        <img
           src={song.coverUrl}
-          alt="coverimage"
-          width={190}
-          height={100}
-          className="rounded object-cover"
+          alt={song.title}
+          className="w-full h-full object-cover rounded"
         />
+
+        {/* ▶ PLAY BUTTON (hover only) */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
+          <button
+            onClick={handlePlay}
+            className="h-12 w-12 bg-green-500 rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition"
+            aria-label="Play"
+          >
+            <PlayButton />
+          </button>
         </div>
-        
-        <div className="text-xl font-bold -mb-1">{song.title}</div>
-        <div> {artistName[0].name} </div>
       </div>
-    )
-  }
+
+      {/* TEXT */}
+      <div className="text-lg font-bold leading-tight truncate">
+        {song.title}
+      </div>
+
+      <div className="text-sm text-neutral-300 truncate">
+        {artist?.name ?? "Unknown Artist"}
+      </div>
+    </div>
+  );
+}

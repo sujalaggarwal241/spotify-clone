@@ -15,15 +15,13 @@ import DeviceIcon from "@/iconComponents/Device";
 import SpeakerIcon from "@/iconComponents/Speaker";
 import MiniScreenIcon from "@/iconComponents/MiniScreen";
 import FullScreenIcon from "@/iconComponents/FullScreen";
-import { useLikedSongs } from "../../hooks/useLikedSongs";
+import { useLikedSongs } from "../hooks/useLikedSongs";
 
 export default function Player() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [isCurrentSongLiked, setIsCurrentSongLiked] = useState(false);
-
 
   const {
     currentSong,
@@ -37,24 +35,39 @@ export default function Player() {
     toggleLoop,
   } = usePlayback();
 
-  const { isLiked, toggleLike } = useLikedSongs(currentSong?.id);
+  const { isLiked, toggleLike } = useLikedSongs(currentSong?._id);
 
-  /* ---------- AUDIO SYNC ---------- */
+  // ✅ When song changes, reload audio src and play if needed
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !currentSong) return;
+    if (!audio || !currentSong?.audioUrl) return;
 
-    if (isPlaying) audio.play();
-    else audio.pause();
-  }, [isPlaying, currentSong]);
+    audio.load(); // ✅ important when changing src
 
-  /* ---------- AUDIO EVENTS ---------- */
+    if (isPlaying) {
+      audio.play().catch(() => {});
+    }
+  }, [currentSong?.audioUrl]);
+
+  // ✅ Play/pause sync
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !currentSong?.audioUrl) return;
+
+    if (isPlaying) {
+      audio.play().catch(() => {});
+    } else {
+      audio.pause();
+    }
+  }, [isPlaying, currentSong?._id]);
+
+  // ✅ audio events
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const onTime = () => setCurrentTime(audio.currentTime);
-    const onLoaded = () => setDuration(audio.duration);
+    const onLoaded = () => setDuration(audio.duration || 0);
     const onEnd = () => next();
 
     audio.addEventListener("timeupdate", onTime);
@@ -68,7 +81,7 @@ export default function Player() {
     };
   }, [next]);
 
-  /* ---------- SEEK ---------- */
+  // seek
   const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!progressRef.current || !audioRef.current) return;
 
@@ -77,7 +90,7 @@ export default function Player() {
     audioRef.current.currentTime = percent * duration;
   };
 
-  /* ---------- FORMAT TIME ---------- */
+  // format time
   const formatTime = (time: number) => {
     const m = Math.floor(time / 60);
     const s = Math.floor(time % 60);
@@ -99,7 +112,7 @@ export default function Player() {
       <div className="fixed bottom-0 left-0 w-full h-20 px-6 flex items-center bg-black z-50">
         {/* LEFT */}
         <div className="flex gap-4 min-w-[280px]">
-          {/* IMAGE + TEXT */}
+          {/* image + text */}
           <div className="flex items-center gap-3">
             <div
               className="w-14 h-14 rounded bg-cover bg-center"
@@ -116,39 +129,34 @@ export default function Player() {
             </div>
           </div>
 
-          {/* LIKE BUTTON */}
+          {/* like */}
           <div className="flex items-center">
             {isLiked ? (
               <svg
-                onClick={() => toggleLike(currentSong?.id)}
+                onClick={() => toggleLike(currentSong._id)}
                 className="w-4 h-4 text-[#1db954] cursor-pointer fill-white"
-                
                 viewBox="0 0 16 16"
               >
                 <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m11.748-1.97a.75.75 0 0 0-1.06-1.06l-4.47 4.47-1.405-1.406a.75.75 0 1 0-1.061 1.06l2.466 2.467 5.53-5.53z" />
               </svg>
             ) : (
               <svg
-              onClick={() => toggleLike(currentSong?.id)}
+                onClick={() => toggleLike(currentSong._id)}
                 className="w-4 h-4 text-neutral-400 fill-white cursor-pointer"
                 viewBox="0 0 24 24"
               >
-                <path d="M11.999 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18m-11 9c0-6.075 4.925-11 11-11s11 4.925 11 11-4.925 11-11 11-11-4.925-11-11" /> 
+                <path d="M11.999 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18m-11 9c0-6.075 4.925-11 11-11s11 4.925 11 11-4.925 11-11 11-11-4.925-11-11" />
                 <path d="M17.999 12a1 1 0 0 1-1 1h-4v4a1 1 0 1 1-2 0v-4h-4a1 1 0 1 1 0-2h4V7a1 1 0 1 1 2 0v4h4a1 1 0 0 1 1 1" />
               </svg>
             )}
           </div>
         </div>
 
-
         {/* CENTER */}
         <div className="flex flex-col flex-1 gap-2 items-center">
-          {/* CONTROLS */}
+          {/* controls */}
           <div className="flex items-center gap-2">
-            <IconButton
-              label="Shuffle"
-              onClick={toggleShuffle}
-            >
+            <IconButton label="Shuffle" onClick={toggleShuffle}>
               <ShuffleIcon />
             </IconButton>
 
@@ -167,15 +175,12 @@ export default function Player() {
               <NextIcon />
             </IconButton>
 
-            <IconButton
-              label="Loop"
-              onClick={toggleLoop}
-            >
+            <IconButton label="Loop" onClick={toggleLoop}>
               <LoopIcon />
             </IconButton>
           </div>
 
-          {/* PROGRESS */}
+          {/* progress */}
           <div className="flex items-center gap-2 w-full max-w-xl">
             <span className="text-xs text-neutral-400">
               {formatTime(currentTime)}
@@ -205,15 +210,27 @@ export default function Player() {
 
         {/* RIGHT */}
         <div className="flex gap-1 items-center min-w-[240px] justify-end">
-          <IconButton label="Lyrics"><MicIcon /></IconButton>
-          <IconButton label="Queue"><QueueIcon /></IconButton>
-          <IconButton label="Devices"><DeviceIcon /></IconButton>
-          <IconButton label="Volume"><SpeakerIcon /></IconButton>
+          <IconButton label="Lyrics">
+            <MicIcon />
+          </IconButton>
+          <IconButton label="Queue">
+            <QueueIcon />
+          </IconButton>
+          <IconButton label="Devices">
+            <DeviceIcon />
+          </IconButton>
+          <IconButton label="Volume">
+            <SpeakerIcon />
+          </IconButton>
 
           <div className="w-16 h-1 bg-neutral-600 rounded-full" />
 
-          <IconButton label="Mini Player"><MiniScreenIcon /></IconButton>
-          <IconButton label="Full Screen"><FullScreenIcon /></IconButton>
+          <IconButton label="Mini Player">
+            <MiniScreenIcon />
+          </IconButton>
+          <IconButton label="Full Screen">
+            <FullScreenIcon />
+          </IconButton>
         </div>
       </div>
     </>

@@ -1,7 +1,11 @@
+"use client";
+
 import GridCard from "@/components/GridCard";
 import Card from "@/components/Card";
-import { songs } from "../../public/data/songs";
+import { useSongs } from "@/hooks/useSongs";
+import type { Song } from "@/types/songs";
 export default function Home() {
+  const { data: songs = [] } = useSongs();
   return (
     <div className="bg-neutral-900 w-full rounded-xl gap-6 flex flex-col rounded-xl">
       <div className="flex items-center gap-4 sticky top-0 bg-neutral-900 py-5 pl-12 w-full rounded-xl">
@@ -28,12 +32,12 @@ export default function Home() {
         <div>Show all</div>
         </div>
         <div className="flex overflow-x-auto gap-4 whitespace-nowrap">
-          {songs.map((song) => (
-            <Card song={song} />
+          {songs.map((song : Song) => (
+            <Card key={song._id}  song={song} />
           ))}
         </div>
       </div>
       </div>
     </div>
   );
-}
+}  
