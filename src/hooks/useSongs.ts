@@ -8,6 +8,6 @@ export function useSongs() {
       if (!res.ok) throw new Error("Failed to fetch songs");
       return res.json();
     },
-    staleTime: Infinity,
+    staleTime: 60*1000,
   });
 }

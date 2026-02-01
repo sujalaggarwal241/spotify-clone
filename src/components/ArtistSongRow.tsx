@@ -1,5 +1,6 @@
+"use client";
 import { useLikedSongs } from "../hooks/useLikedSongs"
-
+import { useRouter } from "next/navigation"
 export default function ArtistSongRow(props :{
 	id : number
 	index: number
@@ -9,6 +10,7 @@ export default function ArtistSongRow(props :{
 	_id: any
 }) {
 
+	const router = useRouter();
 	const {isLiked, toggleLike} = useLikedSongs(props._id)
 
 
@@ -21,7 +23,7 @@ export default function ArtistSongRow(props :{
 				<img src="/coverImages/8.jpg" alt="" />
 			</div>
 			<div className="flex flex-col w-125">
-				<div className="font-bold">{props.songTitle}</div>
+				<div onClick={() => router.push(`/song/${props._id}`)} className="font-bold hover:underline">{props.songTitle}</div>
 				<div></div>
 			</div>
 			<div className="flex flex-end">{props.streams}</div>

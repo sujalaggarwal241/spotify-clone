@@ -12,7 +12,6 @@ import { usePlayback } from "@/context/PlaybackContext";
 
 const STORAGE_KEY = "likedSongs";
 
-// normalize Mongo id (ObjectId / {$oid} / etc) -> string
 const toId = (v: any) => {
   if (!v) return "";
   if (typeof v === "string") return v;
@@ -26,19 +25,18 @@ export default function LikedSongs() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    if (status === "loading") return;
-    if (!session) router.push("/login");
-  }, [status, session, router]);
-
-  if (status === "loading") return null;
-  if (!session) return null;
-
+  // ✅ CALL ALL HOOKS BEFORE ANY RETURN
   const { data: songs = [] } = useSongs();
   const { data: artists = [] } = useArtists();
   const { playSong } = usePlayback();
 
   const [likedIds, setLikedIds] = useState<string[]>([]);
+
+  // redirect
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) router.push("/login");
+  }, [status, session, router]);
 
   // Load ids from localStorage + keep synced
   useEffect(() => {
@@ -69,11 +67,14 @@ export default function LikedSongs() {
     };
   }, []);
 
-  // Filter liked songs from fetched songs
+  // ✅ NOW you can return safely
+  if (status === "loading") return null;
+  if (!session) return null;
+
   const likedSongs = useMemo(() => {
     if (!likedIds.length) return [];
     const set = new Set(likedIds);
-    return songs.filter((s: any) => set.has(toId(s._id)));
+    return (songs as any[]).filter((s: any) => set.has(toId(s._id)));
   }, [songs, likedIds]);
 
   const totalTime = useMemo(() => {
@@ -141,32 +142,24 @@ export default function LikedSongs() {
           >
             <ShuffleIcon />
           </button>
-
-          {/* download icon (UI only) */}
-          <div>
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              className="w-10 h-10 fill-current text-neutral-400 hover:fill-white"
-            >
-              <path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11-4.925 11-11 11S1 18.075 1 12" />
-              <path d="M12 6.05a1 1 0 0 1 1 1v7.486l1.793-1.793a1 1 0 1 1 1.414 1.414L12 18.364l-4.207-4.207a1 1 0 1 1 1.414-1.414L11 14.536V7.05a1 1 0 0 1 1-1" />
-            </svg>
-          </div>
         </div>
 
         {/* TABLE HEADER */}
-        <div className="flex h-14 gap-4 items-center border-b mb-4 sticky top-0 bg-neutral-900">
-          <div className="h-10 w-10 items-center flex justify-center">#</div>
-          <div className="font-bold">Title</div>
-          <div className="flex-1" />
-          <div className="mr-8">Clock</div>
-        </div>
+        {likedSongs.length > 0 ? (
+          <div className="flex h-14 gap-4 items-center border-b mb-4 sticky top-0 bg-neutral-900">
+            <div className="h-10 w-10 items-center flex justify-center">#</div>
+            <div className="font-bold">Title</div>
+            <div className="flex-1" />
+            <div className="mr-8">Clock</div>
+          </div>
+        ) : (
+          <div className="py-6 text-neutral-300">You have no liked songs</div>
+        )}
 
         {/* ROWS */}
         {likedSongs.map((song: any, index: number) => {
           const artistName =
-            artists.find((a: any) => toId(a._id) === toId(song.artistId))?.name ??
+            (artists as any[]).find((a: any) => toId(a._id) === toId(song.artistId))?.name ??
             song.artist ??
             "Unknown";
 

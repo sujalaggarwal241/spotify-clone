@@ -1,16 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-
-export type Playlist = {
-  _id: string;
-  name: string;
-  description: string;
-  coverUrl: string;
-  ownerId: string;
-  songs: string[];
-  isPublic: boolean;
-  createdAt: string;
-  updatedAt: string;
-};
+import { Playlist } from "@/types/Playlist";
 
 type ApiError = {
   error: string;

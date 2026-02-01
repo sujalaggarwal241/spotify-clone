@@ -20,5 +20,7 @@ export function useSongsByIds(ids?: string[]) {
     queryKey: ["songsByIds", ids],
     queryFn: () => fetchSongsByIds(ids!),
     enabled: Boolean(ids && ids.length > 0),
+    staleTime: 60*1000,
+
   });
 }

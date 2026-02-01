@@ -5,10 +5,11 @@ import { useArtists } from "@/hooks/useArtists";
 import type { Artist } from "@/types/artists";
 import { usePlayback } from "@/context/PlaybackContext";
 import PlayButton from "@/iconComponents/Play";
+import { useRouter } from "next/navigation";
 export default function Card({ song }: { song: Song }) {
   const { data: artists = [] } = useArtists();
   const { playSong } = usePlayback();
-
+  const router = useRouter();
   const artist = artists.find(
     (artist: Artist) => song.artistId === artist._id
   );
@@ -41,7 +42,10 @@ export default function Card({ song }: { song: Song }) {
       </div>
 
       {/* TEXT */}
-      <div className="text-lg font-bold leading-tight truncate">
+      <div 
+        onClick={() => router.push(`/song/${song._id}`)}
+        className="text-lg font-bold leading-tight truncate hover:underline"
+        >
         {song.title}
       </div>
 

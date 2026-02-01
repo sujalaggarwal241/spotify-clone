@@ -7,6 +7,7 @@ import { usePlayback } from "@/context/PlaybackContext";
 import { useArtists } from "@/hooks/useArtists";
 import { useMemo } from "react";
 import { Song } from "@/types/songs";
+import { useRouter } from "next/navigation";
 
 const toId = (v: any) => {
   if (!v) return "";
@@ -21,6 +22,7 @@ export default function RightSidebar() {
   const { currentSong } = usePlayback();
   const { data: songs = [] } = useSongs();
   const { data: artists = [] } = useArtists();
+  const router = useRouter();
 
   const currentArtistId = useMemo(
     () => toId(currentSong?.artistId),
@@ -83,7 +85,7 @@ export default function RightSidebar() {
 
             <div className="flex justify-between items-center">
               <div className="flex flex-col justify-center">
-                <div className="text-xl font-bold">{currentSong.title}</div>
+                <div onClick={() => router.push(`/song/${currentSong._id}`)} className="text-xl font-bold hover:underline">{currentSong.title}</div>
                 <div className="text-sm text-neutral-300">{currentSong.artist}</div>
               </div>
 

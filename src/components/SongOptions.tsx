@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import AddToPlaylistSubmenu from "./AddToPlaylistSubmenu";
-
+import { useLikedSongs } from "@/hooks/useLikedSongs";
 export default function SongOptions({
   songId,
   onClose,
@@ -11,6 +11,7 @@ export default function SongOptions({
   onClose?: () => void;
 }) {
   const [isSubOpen, setIsSubOpen] = useState(false);
+  const {toggleLike, isLiked } = useLikedSongs(songId);
 
   return (
     <div
@@ -27,8 +28,15 @@ export default function SongOptions({
         <span className="text-neutral-300">‹</span>
       </div>
 
-      <div className="px-4 py-2 hover:bg-neutral-700 cursor-pointer">
-        Remove from Liked Songs
+      <div 
+        className="px-4 py-2 hover:bg-neutral-700 cursor-pointer" 
+        onClick={
+          () => {
+            toggleLike(songId);
+          }
+        }
+      >
+        {isLiked ? "Remove from liked songs" : "Add to liked songs" }
       </div>
 
       <div className="px-4 py-2 hover:bg-neutral-700 cursor-pointer">

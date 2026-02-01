@@ -11,6 +11,6 @@ export function useArtist(id: string) {
       return res.json();
     },
     enabled: !!id,
-    staleTime: Infinity,
+    staleTime: 60*1000,
   });
 }

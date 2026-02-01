@@ -97,6 +97,7 @@ export default function Artist() {
 
           {popularSongs.map((song: any, index: number) => (
             <ArtistSongRow
+              
               key={song._id}
               id={song._id} // if your row expects number, change prop name/type
               index={index + 1}

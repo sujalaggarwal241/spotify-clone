@@ -6,6 +6,8 @@ import type { Song } from "../types/songs";
 import { useLikedSongs } from "../hooks/useLikedSongs";
 import SongOptions from "./SongOptions";
 import AddToPlaylistSubmenu from "./AddToPlaylistSubmenu";
+import PlayIcon from "@/iconComponents/Play";
+import { useRouter } from "next/navigation";
 
 type AlbumRowProps = {
   index: number;
@@ -22,6 +24,7 @@ export default function AlbumRow({
   duration,
   playlist,
 }: AlbumRowProps) {
+  const router = useRouter();
   const { playSong } = usePlayback();
   const { isLiked, toggleLike } = useLikedSongs(song._id);
 
@@ -62,23 +65,26 @@ export default function AlbumRow({
         className="h-10 w-10 flex items-center justify-center text-neutral-400 group-hover:text-white"
       >
         <span className="group-hover:hidden">{index}</span>
+        <span className=" opacity-0 group-hover:opacity-100"><PlayIcon /></span>
       </button>
 
       {/* TITLE */}
       <div>
-        <div className="font-bold">{song.title}</div>
+        <div 
+          onClick={() => router.push(`/song/${song._id}`)}
+          className="font-bold hover:underline">{song.title}</div>
         <div className="text-sm text-neutral-300">{artistName}</div>
       </div>
 
       <div className="flex-1" />
 
       {/* ✅ LIKE / ADD */}
-      <div className="relative flex items-center" ref={addMenuRef}>
+      <div className="relative flex items-center " ref={addMenuRef}>
         {!isLiked ? (
           /* NOT LIKED → PLUS ICON → like song */
           <svg
             onClick={() => toggleLike(song._id)}
-            className="w-5 h-5 text-neutral-400 fill-white cursor-pointer hover:text-white"
+            className="w-5 h-5 text-neutral-400 fill-white cursor-pointer hover:text-white opacity-0 group-hover:opacity-100"
             viewBox="0 0 24 24"
           >
             <path d="M11.999 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18m-11 9c0-6.075 4.925-11 11-11s11 4.925 11 11-4.925 11-11 11-11-4.925-11-11" />

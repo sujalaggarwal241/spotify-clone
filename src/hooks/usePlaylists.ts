@@ -8,5 +8,6 @@ export function usePlaylists() {
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
+    retry: false
   });
 }

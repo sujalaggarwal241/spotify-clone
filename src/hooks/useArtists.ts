@@ -10,6 +10,6 @@ export function useArtists() {
       if (!res.ok) throw new Error("Failed to fetch artists");
       return res.json();
     },
-    staleTime: Infinity,
+    staleTime: 60*1000,
   });
 }
